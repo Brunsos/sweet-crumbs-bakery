@@ -5,8 +5,14 @@ import Layout from '@/components/layout/Layout';
 import Hero from '@/components/sections/Hero';
 import FeaturedProducts from '@/components/sections/FeaturedProducts';
 import CTABanner from '@/components/sections/CTABanner';
+import { mockProducts, mockHomepageContent } from '@/lib/mockData';
 
 async function getProducts(): Promise<Product[]> {
+  // In production without WordPress, use mock data
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_WORDPRESS_API_URL?.includes('http')) {
+    return mockProducts;
+  }
+
   try {
     const data = await graphqlClient.request(GET_PRODUCTS, { first: 6 });
     return data.posts.nodes.map((post: any) => ({
@@ -23,17 +29,24 @@ async function getProducts(): Promise<Product[]> {
     }));
   } catch (error) {
     console.error('Error fetching products:', error);
-    return [];
+    // Fallback to mock data if WordPress fails
+    return mockProducts;
   }
 }
 
 async function getHomepageContent() {
+  // In production without WordPress, use mock data
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_WORDPRESS_API_URL?.includes('http')) {
+    return mockHomepageContent;
+  }
+
   try {
     const data = await graphqlClient.request(GET_HOMEPAGE_CONTENT);
     return data.pageBy?.homepageContent || null;
   } catch (error) {
     console.error('Error fetching homepage content:', error);
-    return null;
+    // Fallback to mock data if WordPress fails
+    return mockHomepageContent;
   }
 }
 
