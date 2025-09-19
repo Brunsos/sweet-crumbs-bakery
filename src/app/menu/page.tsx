@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { graphqlClient } from '@/lib/graphql';
 import { GET_PRODUCTS } from '@/lib/queries';
-import { Product } from '@/types';
+import { Product, GraphQLProductsResponse } from '@/types';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/ui/ProductCard';
 
@@ -18,8 +18,8 @@ const MenuPage = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const data = await graphqlClient.request(GET_PRODUCTS);
-        const transformedProducts: Product[] = data.products.nodes.map((product: any) => ({
+        const data = await graphqlClient.request(GET_PRODUCTS) as GraphQLProductsResponse;
+        const transformedProducts: Product[] = data.products!.nodes.map((product) => ({
           id: product.id,
           name: product.productFields?.name || product.title,
           description: product.productFields?.description || product.content?.replace(/<[^>]*>/g, '').substring(0, 150),

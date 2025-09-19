@@ -1,6 +1,6 @@
 import { graphqlClient } from '@/lib/graphql';
 import { GET_POST_BY_SLUG, GET_POSTS } from '@/lib/queries';
-import { Post } from '@/types';
+import { Post, GraphQLPostResponse, GraphQLPostsResponse } from '@/types';
 import Layout from '@/components/layout/Layout';
 import Link from 'next/link';
 
@@ -12,7 +12,7 @@ interface PostPageProps {
 
 async function getPost(slug: string): Promise<Post | null> {
   try {
-    const data = await graphqlClient.request(GET_POST_BY_SLUG, { slug });
+    const data = await graphqlClient.request(GET_POST_BY_SLUG, { slug }) as GraphQLPostResponse;
     const post = data.postBy;
 
     if (!post) return null;
@@ -40,8 +40,8 @@ async function getPost(slug: string): Promise<Post | null> {
 
 export async function generateStaticParams() {
   try {
-    const data = await graphqlClient.request(GET_POSTS);
-    return data.posts.nodes.map((post: any) => ({
+    const data = await graphqlClient.request(GET_POSTS) as GraphQLPostsResponse;
+    return data.posts.nodes.map((post) => ({
       slug: post.slug,
     }));
   } catch (error) {
@@ -63,7 +63,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 Post Not Found
               </h1>
               <p className="mt-6 text-lg leading-8 text-amber-700">
-                The blog post you're looking for doesn't exist or has been moved.
+                The blog post you&apos;re looking for doesn&apos;t exist or has been moved.
               </p>
               <div className="mt-10">
                 <Link

@@ -1,6 +1,6 @@
 import { graphqlClient } from '@/lib/graphql';
 import { GET_PRODUCTS, GET_HOMEPAGE_CONTENT } from '@/lib/queries';
-import { Product } from '@/types';
+import { Product, GraphQLProductsResponse, GraphQLHomepageResponse } from '@/types';
 import Layout from '@/components/layout/Layout';
 import Hero from '@/components/sections/Hero';
 import FeaturedProducts from '@/components/sections/FeaturedProducts';
@@ -14,8 +14,8 @@ async function getProducts(): Promise<Product[]> {
   }
 
   try {
-    const data = await graphqlClient.request(GET_PRODUCTS, { first: 6 });
-    return data.posts.nodes.map((post: any) => ({
+    const data = await graphqlClient.request(GET_PRODUCTS, { first: 6 }) as GraphQLProductsResponse;
+    return data.posts!.nodes.map((post) => ({
       id: post.id,
       name: post.title,
       description: post.content?.replace(/<[^>]*>/g, '').substring(0, 150) || 'Delicious bakery item',
@@ -41,7 +41,7 @@ async function getHomepageContent() {
   }
 
   try {
-    const data = await graphqlClient.request(GET_HOMEPAGE_CONTENT);
+    const data = await graphqlClient.request(GET_HOMEPAGE_CONTENT) as GraphQLHomepageResponse;
     return data.pageBy?.homepageContent || null;
   } catch (error) {
     console.error('Error fetching homepage content:', error);

@@ -48,7 +48,7 @@ export function generateMetadata({
       },
     },
     openGraph: {
-      type: type as any,
+      type: type as 'website' | 'article',
       locale: 'en_US',
       url,
       title: fullTitle,

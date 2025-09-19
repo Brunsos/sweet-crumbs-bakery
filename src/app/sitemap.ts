@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { graphqlClient } from '@/lib/graphql';
 import { GET_POSTS, GET_PRODUCTS } from '@/lib/queries';
+import { GraphQLPostsResponse, GraphQLProductsResponse } from '@/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sweetcrumbs.com';
@@ -39,12 +40,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    const [postsData, productsData] = await Promise.all([
-      graphqlClient.request(GET_POSTS).catch(() => ({ posts: { nodes: [] } })),
-      graphqlClient.request(GET_PRODUCTS).catch(() => ({ products: { nodes: [] } })),
-    ]);
+    const postsRequest = graphqlClient.request(GET_POSTS).catch(() => ({ posts: { nodes: [] } })) as Promise<GraphQLPostsResponse>;
+    const productsRequest = graphqlClient.request(GET_PRODUCTS).catch(() => ({ products: { nodes: [] } })) as Promise<GraphQLProductsResponse>;
 
-    const blogRoutes = postsData.posts.nodes.map((post: any) => ({
+    const [postsData] = await Promise.all([postsRequest, productsRequest]);
+
+    const blogRoutes = postsData.posts.nodes.map((post) => ({
       url: `${baseUrl}/blog/${post.slug}`,
       lastModified: new Date(post.date),
       changeFrequency: 'monthly' as const,

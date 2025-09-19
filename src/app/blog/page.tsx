@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { graphqlClient } from '@/lib/graphql';
 import { GET_POSTS } from '@/lib/queries';
-import { Post } from '@/types';
+import { Post, GraphQLPostsResponse } from '@/types';
 import Layout from '@/components/layout/Layout';
 import PostCard from '@/components/ui/PostCard';
 
@@ -16,8 +16,8 @@ const BlogPage = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const data = await graphqlClient.request(GET_POSTS);
-        const transformedPosts: Post[] = data.posts.nodes.map((post: any) => ({
+        const data = await graphqlClient.request(GET_POSTS) as GraphQLPostsResponse;
+        const transformedPosts: Post[] = data.posts.nodes.map((post) => ({
           id: post.id,
           title: post.title,
           excerpt: post.excerpt,

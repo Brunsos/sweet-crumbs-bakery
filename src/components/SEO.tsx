@@ -1,5 +1,5 @@
 interface SEOProps {
-  schema?: any;
+  schema?: Record<string, unknown>;
 }
 
 const SEO = ({ schema }: SEOProps) => {

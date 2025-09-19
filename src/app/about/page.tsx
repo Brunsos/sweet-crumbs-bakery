@@ -1,11 +1,26 @@
 import { graphqlClient } from '@/lib/graphql';
 import { GET_PAGE_BY_SLUG } from '@/lib/queries';
-import { Page } from '@/types';
+import { Page, GraphQLAboutResponse } from '@/types';
 import Layout from '@/components/layout/Layout';
+import { mockAboutPage } from '@/lib/mockData';
 
 async function getAboutPage(): Promise<Page | null> {
+  // In production without WordPress, use mock data
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_WORDPRESS_API_URL?.includes('http')) {
+    return {
+      id: '1',
+      title: mockAboutPage.title,
+      content: mockAboutPage.content,
+      slug: 'about',
+      featuredImage: {
+        url: mockAboutPage.featuredImage.node.sourceUrl,
+        alt: mockAboutPage.featuredImage.node.altText,
+      },
+    };
+  }
+
   try {
-    const data = await graphqlClient.request(GET_PAGE_BY_SLUG, { slug: 'about' });
+    const data = await graphqlClient.request(GET_PAGE_BY_SLUG, { slug: 'about' }) as GraphQLAboutResponse;
     const page = data.pageBy;
 
     if (!page) return null;
@@ -22,7 +37,17 @@ async function getAboutPage(): Promise<Page | null> {
     };
   } catch (error) {
     console.error('Error fetching about page:', error);
-    return null;
+    // Fallback to mock data if WordPress fails
+    return {
+      id: '1',
+      title: mockAboutPage.title,
+      content: mockAboutPage.content,
+      slug: 'about',
+      featuredImage: {
+        url: mockAboutPage.featuredImage.node.sourceUrl,
+        alt: mockAboutPage.featuredImage.node.altText,
+      },
+    };
   }
 }
 
@@ -103,7 +128,7 @@ export default async function About() {
                     </div>
                     <h3 className="text-lg font-semibold text-amber-900">Community First</h3>
                     <p className="mt-2 text-amber-700">
-                      We're proud to be part of this community and give back whenever we can.
+                      We&apos;re proud to be part of this community and give back whenever we can.
                     </p>
                   </div>
                 </div>

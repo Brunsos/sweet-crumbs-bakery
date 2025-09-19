@@ -95,7 +95,7 @@ const ContactPage = () => {
           message: data.error || 'Something went wrong. Please try again.',
         });
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus({
         type: 'error',
         message: 'Failed to send message. Please try again later.',
@@ -114,7 +114,7 @@ const ContactPage = () => {
               Contact Us
             </h1>
             <p className="mt-6 text-lg leading-8 text-amber-700">
-              Have a question or want to place a custom order? We'd love to hear from you!
+              Have a question or want to place a custom order? We&apos;d love to hear from you!
             </p>
           </div>
 
